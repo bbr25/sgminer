@@ -47,7 +47,6 @@
 #include "sph/sph_simd.h"
 #include "sph/sph_echo.h"
 #include "sph/sph_hamsi.h"
-#include "sph/sph_fugue.h"
 
 /* Move init out of loop, so init once externally, and then use one single memcpy with that bigger memory block */
 typedef struct {
@@ -63,7 +62,6 @@ typedef struct {
     sph_simd512_context     simd1;
     sph_echo512_context     echo1;
     sph_hamsi512_context    hamsi1;
-    sph_fugue512_context    fugue1;
 } Xhash_context_holder;
 
 static Xhash_context_holder base_contexts;
@@ -83,7 +81,6 @@ void init_Mhash_contexts()
     sph_simd512_init(&base_contexts.simd1);
     sph_echo512_init(&base_contexts.echo1);
     sph_hamsi512_init(&base_contexts.hamsi1);
-    sph_fugue512_init(&base_contexts.fugue1);
 }
 
 /*
@@ -149,11 +146,8 @@ inline void maruhash(void *state, const void *input)
     sph_hamsi512 (&ctx.hamsi1, hashA, 64);   
     sph_hamsi512_close(&ctx.hamsi1, hashB);    
 
-    sph_fugue512 (&ctx.fugue1, hashB, 64);   
-    sph_fugue512_close(&ctx.fugue1, hashA);    
 
-
-    memcpy(state, hashA, 32);
+    memcpy(state, hashB, 32);
 
 }
 
